@@ -1,0 +1,1 @@
+import{c as s}from"./index.51a1eb25.js";import{e as o}from"./arco.f15df757.js";const t=o(0),m=o(0);async function e(){const{data:a}=await s.get("/api/custom/follownum",{});t.value=a.custom_num,m.value=a.approve_num}export{m as a,t as c,e as s};
