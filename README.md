@@ -1,4 +1,4 @@
-# <img src="https://github.com/qincrm/crm/raw/main/resources/logo.png" height="30px"/> 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url]
+# 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url]
 
 [codeclimate-img-url]: https://codeclimate.com/github/qincrm/crm.svg
 [codeclimate-url]: https://codeclimate.com/github/qincrm/crm
@@ -29,7 +29,7 @@ http://139.198.191.172/
  
  ![img1]
 
-[img1]: https://github.com/qincrm/crm/raw/main/resources/1.png 
+[img1]: http://sy.zhaoyuhao.com/assets/1.png 
 
 ### 四、系统功能简介
 
@@ -39,7 +39,7 @@ http://139.198.191.172/
  
 ![img2]
 
-[img2]: https://github.com/qincrm/crm/raw/main/resources/2.png 
+[img2]: http://sy.zhaoyuhao.com/assets/2.png 
 
 2、我的审批，系统支持重要流程系统审批  
 
@@ -49,7 +49,7 @@ http://139.198.191.172/
 
 ![img3]
 
-[img3]: https://github.com/qincrm/crm/raw/main/resources/3.png 
+[img3]: http://sy.zhaoyuhao.com/assets/3.png 
 
 3、客户管理
 
@@ -65,7 +65,7 @@ http://139.198.191.172/
 
 ![img4]
 
-[img4]: https://github.com/qincrm/crm/raw/main/resources/4.png 
+[img4]: http://sy.zhaoyuhao.com/assets/4.png 
 
 4、新数据公共池&公共池客户
 
@@ -81,7 +81,7 @@ http://139.198.191.172/
 
 ![img5]
 
-[img5]: https://github.com/qincrm/crm/raw/main/resources/5.png 
+[img5]: http://sy.zhaoyuhao.com/assets/5.png 
 
 6、数据管理—成本、回款、工作日志
 
@@ -91,7 +91,7 @@ http://139.198.191.172/
 
 ![img6]
 
-[img6]: https://github.com/qincrm/crm/raw/main/resources/6.png 
+[img6]: http://sy.zhaoyuhao.com/assets/6.png 
 
 7、客户流转规则
 
@@ -99,7 +99,7 @@ http://139.198.191.172/
 
 ![img7]
 
-[img7]: https://github.com/qincrm/crm/raw/main/resources/7.png 
+[img7]: http://sy.zhaoyuhao.com/assets/7.png 
 
 8、销售顾问跟进数据权限
 
@@ -107,7 +107,7 @@ http://139.198.191.172/
 
 ![img8]
 
-[img8]: https://github.com/qincrm/crm/raw/main/resources/8.png 
+[img8]: http://sy.zhaoyuhao.com/assets/8.png 
 
 9、渠道管理
 
@@ -115,7 +115,7 @@ http://139.198.191.172/
 
 ![img9]
 
-[img9]: https://github.com/qincrm/crm/raw/main/resources/9.png 
+[img9]: http://sy.zhaoyuhao.com/assets/9.png 
 
 10、产品管理
 
@@ -123,7 +123,7 @@ http://139.198.191.172/
 
 ![img10]
 
-[img10]: https://github.com/qincrm/crm/raw/main/resources/10.png 
+[img10]: http://sy.zhaoyuhao.com/assets/10.png 
 
 11、用户管理
 
@@ -131,7 +131,7 @@ http://139.198.191.172/
 
 ![img11]
 
-[img11]: https://github.com/qincrm/crm/raw/main/resources/11.png 
+[img11]: http://sy.zhaoyuhao.com/assets/11.png 
 
 12、岗位管理
 
@@ -139,7 +139,7 @@ http://139.198.191.172/
 
 ![img12]
 
-[img12]: https://github.com/qincrm/crm/raw/main/resources/12.png 
+[img12]: http://sy.zhaoyuhao.com/assets/12.png 
 
 13、ip白名单管理
 
@@ -147,7 +147,7 @@ http://139.198.191.172/
 
 ![img13]
 
-[img13]: https://github.com/qincrm/crm/raw/main/resources/13.png 
+[img13]: http://sy.zhaoyuhao.com/assets/13.png 
 
 ### 五、联系我们
 
