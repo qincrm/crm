@@ -24,6 +24,7 @@ class ApproveService
         -1 => "审批拒绝",
         -2 => "审批取消",
     ];
+    
     /**
      * 发起流程
      */
@@ -38,7 +39,7 @@ class ApproveService
             $index = 1;
             $approveUserId = array_unique($approveUserId);
             foreach ($approveUserId as $uid) {
-                $status = 2;
+                $status = 2; // 默认等待审批
                 if (empty($uid)) {
                     continue;
                 }
@@ -123,6 +124,9 @@ class ApproveService
         $this->noticeBiz($approve->type, $approve->tid, -1);
     }
 
+    /**
+     * 获取某个审批流当前的审批人
+     */
     public function getApproveUser($id) {
         $detailModel = new ApproveDetail();
         return $detailModel->where('status', 0)->where('aid', $id)->get()->take(1)->toArray()[0];

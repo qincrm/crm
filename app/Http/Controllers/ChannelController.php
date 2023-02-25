@@ -21,46 +21,32 @@ class ChannelController extends Controller
      */
     public function list(Request $request) {
 
-        $userId = $request->session()->get('user_id');
-        $userModel = new SystemUser();
         $params = $request->all();
-        $export = $params['export'];
-        $followUserArray = app(RightService::class)->getCustomViews($userId);
-        if ($followUserArray == 'all') {
-            $followUserList = $userModel->getAllUser();
-            $followUserArray = collect($followUserList)->mapWithKeys(function ($item) {
-                return [$item['id'] => $item['name']];
-            })->toArray();
-        } else {
-            $params['users'] = array_keys($followUserArray);
-        }
-
         $dict = new SystemDict();
-        $sourceDict = $dict->getListByType($dict::TYPE_SOURCE); // 获取城市信息配置
-        $params = $request->all();
-        if ($params['name']) {
-            $params['source'] = array_flip($sourceDict)[$params['name']];
-            if (empty($params['source'])) {
-                $params['source'] = 9999999;
-            }
-        }
         $model = new Customer();
+
+        $sourceDict = $dict->getListByType($dict::TYPE_SOURCE); // 获取渠道配置
+        $params = $request->all();
+
+        // 原始数据
         $list = $model->getListsGroupByChannel($params);
+
+        // 星级统计
         $listtmp = [];
-        $key = $params['type'] == 'user' ? 'follow_user_id' : 'source';
         foreach ($list as $item) {
-            $listtmp[$item[$key]][$item['star']] = $item['cnt'];
+            $listtmp[$item['source']][$item['star']] = $item['cnt'];
         }
+        // 统计状态统计
         $listtmp2 = [];
         $list = $model->getListsGroupByChannel2($params);
         foreach ($list as $item) {
-            $listtmp2[$item[$key]][$item['follow_status1']] = $item['cnt'];
+            $listtmp2[$item['source']][$item['follow_status1']] = $item['cnt'];
         }
         $data['list'] = [];
         foreach ($listtmp as $source => $star) {
             $sum = $star[0] + $star[1] + $star[2] + $star[3] + $star[4] + $star[5] + $star[-1];
             $data['list'][] = [
-                'name' => $params['type'] == 'user' ? ($followUserArray[$source] ?? '公海'): ($sourceDict[$source] ?? '其他'),
+                'name' => $sourceDict[$source] ?? '其他',
                 'channel' => $source,
                 'follow_user_id' => $source,
                 'star0_num' => intval($star[0]) + intval($star[-1]),
@@ -99,48 +85,6 @@ class ChannelController extends Controller
         $dictModel = new SystemDict();
         $sourceList = $dictModel->getListByType($dictModel::TYPE_SOURCE);
         $data['sourceList'] = app(SelectService::class)->genSelectByKV($sourceList); // 渠道来源
-        $teammodel = new SystemTeam();
-        $allTeamListSelect = $teammodel->getAllTeam();
-        $data['allTeamListSelect'] = app(SelectService::class)->genSelect($allTeamListSelect, 'id', 'name'); // 转成前端的select
-        $data['followUserList'] = app(SelectService::class)->genSelectByKV($followUserArray); // 转成前端的select
-        if ($export == 1) {
-            app(ToolService::class)->csv(
-                $params['type'] == 'user' ?  '我的数据' : '渠道数据', [
-                'name'=> $params['type'] == 'user' ?  '跟进顾问' : '渠道名称', 
-                'all_num'=>'总计', 
-                'star0_num'=>'0星',
-                'star0'=>'0星占比',
-                'star1_num'=>'1星',
-                'star1'=>'1星占比',
-                'star2_num'=>'2星',
-                'star2'=>'2星占比',
-                'star3_num'=>'3星',
-                'star3'=>'3星占比',
-                'star4_num'=>'4星',
-                'star4'=>'4星占比',
-                'star5_num'=>'5星',
-                'star5'=>'5星占比',
-                'star6_num'=>'2星以上',
-                'star6'=>'2星以上占比',
-                'star7_num'=>'3星以上',
-                'star7'=>'3星以上占比',
-                'star8_num'=>'4星以上',
-                'star8'=>'4星以上占比',
-                'status0_num'=>'未跟进',
-                'status0'=>'未跟进占比',
-                'status1_num'=>'待跟进',
-                'status1'=>'待跟进占比',
-                'status2_num'=>'跟进中',
-                'status2'=>'跟进中占比',
-                'status3_num'=>'已放款',
-                'status3'=>'已放款占比',
-                'status4_num'=>'已上门',
-                'status4'=>'已上门占比',
-                'status5_num'=>'已签约',
-                'status5'=>'已签约占比',
-            ], $data['list']);
-            return;
-        }
         return $this->apiReturn(static::OK, $data);
     }
 
@@ -149,7 +93,6 @@ class ChannelController extends Controller
      */
     public function detail(Request $request)
     {
-        $userId = $request->session()->get('user_id');
         $timeTypes = [1=>'今日', 2=>'昨日', 3=>'近三天', 4=>'本周', 5=>'本月',];
         $data = [];
         $dictModel = new SystemDict();
@@ -245,7 +188,7 @@ class ChannelController extends Controller
     }
 
     /**
-     * 修改流转规则
+     * 修改渠道数据
      */
     public function edit(Request $request) {
         $model = new Channel();
@@ -276,7 +219,7 @@ class ChannelController extends Controller
 
 
     /**
-     * 锁定用户
+     * 设置渠道状态
      */
     public function setstatus(Request $request) {
         $params = $request->all();

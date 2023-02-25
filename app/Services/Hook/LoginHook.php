@@ -2,21 +2,40 @@
 
 namespace App\Services\Hook;
 
+use App\Models\SystemSetting;
 use App\Models\SystemUserRole;
 
 /**
- * 登录hook ， 机构定制
+ * 登录hook 
  */
 class LoginHook
 {
-    public static function canLogin($userId) {
+    /**
+     * 判断用户是否可以登录
+     */
+    public static function canLogin($userId, $request) {
         $model = new SystemUserRole();
         $roles = $model->getRoleByUserId($userId);
         $rolesIds = array_column($roles, 'role_id');
-        // 非管理员 8 - 20点不允许登录系统
-        if (!in_array(1, $rolesIds) && (date('Hi') < 800 || date('Hi') > 2130)) {
-            return ['status'=>false, 'msg' => '请在8:00 ~ 21:30 之间登录系统'];
+        $setting = SystemSetting::find(1);
+        if ($setting['ip']) {
+            $ip = explode(",", $setting['ip']) ;
+            if (!in_array($request->ip(), $ip) && !in_array(1, $rolesIds)) {
+                return false;
+            }
         }
-        return ['status'=>true, 'msg' => ''];
+        return true;
+    }
+    
+    /**
+     * 获取用户第一个能打开的页面
+     */
+    public static function getPage($userId) {
+        $service = app(\App\Services\RightService::class);
+        $realMenus = ($service->getRightTree($userId)['tree']);
+        foreach ($realMenus as $menu) {
+            return $menu['path'];
+        }
+        return '';
     }
 }

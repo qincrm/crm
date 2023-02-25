@@ -211,11 +211,7 @@ class Customer extends Model
         return $query;
     }
     public function getListsGroupByChannel($params) {
-        $groupby = 'source';
-        if ($params['type'] == 'user') {
-            $groupby = 'follow_user_id';
-        }
-        $list = $this->_createChannelWhere($params)->select($groupby, 'star', DB::raw('count(*) as cnt'))->groupBy($groupby, 'star')->get();
+        $list = $this->_createChannelWhere($params)->select('source', 'star', DB::raw('count(*) as cnt'))->groupBy('source', 'star')->get();
         return $list;
     }
     public function getListsGroupByChannel2($params) {

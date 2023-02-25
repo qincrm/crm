@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class ApproveController extends Controller
 {
     /**
-     * 客户列表
+     * 审批列表
      */
     public function list(Request $request)
     {
@@ -20,17 +20,16 @@ class ApproveController extends Controller
         $params = $request->all();
         $params['user_id'] = $userId;
         if ($params['ltype'] == 1) {
+            // 我发起的审批取审批列表
             $model = new Approve();
         } else {
+            // 需求我审批的取审批详情，一个审批对应多个审批人
             $model = new ApproveDetail();
         }
         $list = $model->getLists($params);
         // 加工显示项目
         $userModel = new SystemUser();
-        $userList = $userModel->getAllUser();
-        $userArray = collect($userList)->mapWithKeys(function ($item) {
-            return [$item['id'] => $item['name']];
-        })->toArray();
+        $userArray = $userModel->getAllUserMap();
         $service = new ApproveService();
         foreach ($list as $key => $item) {
             if ($params['ltype'] != 1) {
@@ -43,6 +42,7 @@ class ApproveController extends Controller
             $item['name'] = ApproveService::TYPE_MAPPING[$item['type']];
             $item['status_name'] = ApproveService::STATUS_MAPPING[$item['status']];
             if ($item['status'] == 0) {
+                // 获取当前的审批人
                 $detail = $service->getApproveUser($item['id']);
                 $item['user_name'] = $userArray[$detail['user_id']];
             } else {
@@ -59,7 +59,7 @@ class ApproveController extends Controller
 
 
     /**
-     * 获取用户信息
+     * 拒绝审批
      */
     public function cancel(Request $request)
     {
@@ -72,7 +72,7 @@ class ApproveController extends Controller
 
 
     /**
-     * 修改用户信息
+     * 通过审批 
      */
     public function pass(Request $request)
     {
@@ -88,7 +88,7 @@ class ApproveController extends Controller
     }
 
     /**
-     * 客户列表
+     * 查看审批
      */
     public function view(Request $request)
     {

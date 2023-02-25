@@ -8,14 +8,14 @@ use App\Models\CustomerRuleConfig;
 class Assign extends Command
 {
     protected $signature = 'assign';
-    protected $description = '分配策略';
+    protected $description = '客户分配策略';
 
     /**
-     ** 执行控制台命令
-     **/
+     * 执行控制台命令
+     */
     public function handle() {
-        // 取到所有规则
         echo date('Y-m-d H:i:s') . ' start.......'.PHP_EOL;
+        // 取到所有分配规则
         $model = new CustomerRuleConfig();
         $rules = $model->get();
         foreach ($rules as $rule) {
