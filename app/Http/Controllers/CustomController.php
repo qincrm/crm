@@ -734,20 +734,13 @@ class CustomController extends Controller
         $customId = $params['id'];
         $model = Customer::find($params['id']);
         $backmodel = new CustomerBack();
-        if (empty($params['date'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入放款时间");
-        }
-        if (empty($params['amount'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入放款金额");
-        }
-        if (empty($params['agency_fee'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入点位");
-        }
-        if (empty($params['realmoney'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入实际创收");
-        }
-        if (empty($params['quanzheng'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入权证");
+        if ($errorMsg = ToolService::checkParams($params, [
+            'date' => '放款时间',
+            'amount' => '放款金额',
+            'agency_fee' => '点位',
+            'realmoney' => '实际创收',
+        ])) {
+            return $this->apiReturn(static::ERROR, [], $errorMsg);
         }
         $backmodel->custom_id = $params['id'];
         $backmodel->date = strtotime($params['date']);
@@ -762,7 +755,7 @@ class CustomController extends Controller
         $backmodel->follow_user_id = intval($model->follow_user_id);
         $backmodel->oper_user_id = $userId;
         $backmodel->hetong = $params['hetong'];
-        $backmodel->product_id= $params['product_id'];
+        $backmodel->product_id= intval($params['product_id']);
         $backmodel->status = 0;
         $backmodel->save();
         $logModel = new CustomerLog();
@@ -788,7 +781,7 @@ class CustomController extends Controller
         $approveUserId = [$params['quanzheng'], $user['parent_id'], $parent['parent_id'], 1];
         $approveService = new ApproveService();
         $approveService->createApprove($backmodel->id, $approveService::TYPE_BACK, $form, $userId, $approveUserId);
-        $flag = $logModel->saveLog($logModel::TYPE_BACK, $params['id'], '', '', $userId, "金额:".$params['amount']);
+        $logModel->saveLog($logModel::TYPE_BACK, $params['id'], '', '', $userId, "金额:".$params['amount']);
         return $this->apiReturn(static::OK);
 
     }
@@ -805,17 +798,13 @@ class CustomController extends Controller
         if (empty($params['id']) || empty($backmodel)) {
             return $this->apiReturn(static::ERROR, [], "参数错误,请刷新重试");
         }
-        if (empty($params['date'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入放款时间");
-        }
-        if (empty($params['amount'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入放款金额");
-        }
-        if (empty($params['agency_fee'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入点位");
-        }
-        if (empty($params['realmoney'])) {
-            return $this->apiReturn(static::ERROR, [], "请输入实际创收");
+        if ($errorMsg = ToolService::checkParams($params, [
+            'date' => '放款时间',
+            'amount' => '放款金额',
+            'agency_fee' => '点位',
+            'realmoney' => '实际创收',
+        ])) {
+            return $this->apiReturn(static::ERROR, [], $errorMsg);
         }
         $backmodel->date = strtotime($params['date']);
         $backmodel->amount = $params['amount'];
@@ -824,7 +813,7 @@ class CustomController extends Controller
         $backmodel->remark = $params['remark'];
         $backmodel->cost = $params['cost'];
         $backmodel->hetong = $params['hetong'];
-        $backmodel->product_id= $params['product_id'];
+        $backmodel->product_id= intval($params['product_id']);
         $backmodel->save();
         return $this->apiReturn(static::OK);
 

@@ -24,6 +24,18 @@ class ToolService
     /**
      * 简化sql
      */
+    public static function checkParams($params, $notNull = []) {
+        foreach ($notNull as $key => $value) {
+            if (empty($params[$key])) {
+                return "请输入".$value;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * 简化sql
+     */
     public static function ifQueryEq($query, $params, $field, $sqlfield = '') {
         $sqlfield = $sqlfield == '' ? $field : $sqlfield;
         if (isset($params[$field]) && $params[$field] !== "") {
