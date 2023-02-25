@@ -155,21 +155,17 @@ class CustomerService
     public function get($customId, $followUserId, $operUserId = 0, $assignType = 0) {
         $customModel = new Customer();
         $custom = $customModel->find($customId);
-        if (empty($custom)) {
-            return true;
-        }
-
-        if ($custom->follow_user_id == $followUserId) {
-            return true;
-        }
-
         $oldFollowUserId = $custom->follow_user_id;
+        if (empty($custom) || $oldFollowUserId == $followUserId) {
+            return true;
+        }
 
         if ($custom->follow_user_id != 0) {
             return false;
         }
 
         DB::beginTransaction();
+        $result = true;
 
         if ($custom->first_follow_user_id == 0) {
             $custom->first_follow_user_id = $followUserId;
@@ -179,21 +175,21 @@ class CustomerService
         $custom->assign_time = time();
         $custom->user_from = self::ASSIGN_TYPE_FOLLOW;
         $flag = $custom->save();
-
         if (!$flag) {
-            DB::rollBack();
-            return false;
+            $result = false;
         }
-
 
         $logModel = new CustomerLog();
         $flag = $logModel->saveLog($logModel::TYPE_GET, $customId, $oldFollowUserId, $followUserId, $operUserId, $assignType);
-
         if (!$flag) {
-            DB::rollBack();
-            return false;
+            $result = false;
         }
-        DB::commit();
+
+        if ($result) {
+            DB::commit();
+        } else {
+            DB::rollBack();
+        }
         return true;
     }
 
