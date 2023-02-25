@@ -67,7 +67,6 @@ class NoticeController extends Controller
      */
     public function read(Request $request)
     {
-        $userId = $request->all();
         $noticeModel = new Notice();
         $noticeModel->read($request->get('ids'));
         return $this->apiReturn(static::OK);

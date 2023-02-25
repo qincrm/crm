@@ -17,5 +17,5 @@ class Controller extends BaseController
             'msg' => $msg
         ], $httpCode);
     }
-    //
+
 }

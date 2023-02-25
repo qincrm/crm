@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Customer;
 use Illuminate\Console\Command;
-use App\Models\CustomerRuleConfig;
 
 class Mobile extends Command
 {
@@ -12,8 +11,8 @@ class Mobile extends Command
     protected $description = '手机号重复判断策略';
 
     /**
-     ** 执行控制台命令
-     **/
+     * 给系统里的客户，手机号相同的打标记，表示客户第几次出现
+     */
     public function handle() {
         // 获取上次判断到的id
         $id = intval(@file_get_contents("/www/wwwlogs/mobilelog.txt"));

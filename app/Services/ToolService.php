@@ -21,6 +21,20 @@ class ToolService
         return $returnData;
     }
 
+    /**
+     * 简化sql
+     */
+    public static function ifQueryEq($query, $params, $field, $sqlfield = '') {
+        $sqlfield = $sqlfield == '' ? $field : $sqlfield;
+        if (isset($params[$field]) && $params[$field] !== "") {
+            $query = $query->where($sqlfield, $params[$field]);
+        }
+        return $query;
+    }
+
+    /**
+     * 导出csv
+     */
     public function csv($downname, $header, $data) {
         $tempfile = "/tmp/".time().".csv";
         $fp = fopen($tempfile, 'w+');//生成CSV文件

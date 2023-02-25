@@ -17,7 +17,6 @@ class Kernel extends ConsoleKernel
         Commands\Assign::class,
         Commands\Channel::class,
         Commands\Mobile::class,
-        Commands\Report::class,
     ];
 
     /**

@@ -352,4 +352,33 @@ class CustomerService
 
         return $returnData;
     }
+
+    /**
+     * 新增渠道过来的用户
+     */
+    public function addChannelCustomer($custom) {
+        $id = 0;
+        $hasInfo = Customer::where('source', $custom['source'])->where('channel_id', $custom['channel_id'])->get()->toArray();
+        // 判断客户已经存在
+        if (empty($hasInfo)) {
+            $customService = app(CustomerService::class);
+            $userService = app(UserService::class);
+            $item['mobile_md5'] = md5($custom['mobile']);
+            // 写客户信息表
+            $id = (new Customer())->insertGetId($item);
+            $users = $userService->getAllAssignUser();
+            // 遍历所有可以对接客户的销售
+            foreach ($users as $userId => $leftCount) {
+                $userId = intval($userId);
+                // 销售今天没有名额了
+                if ($leftCount <= 0) {
+                    continue;
+                }
+                Log::info("addChannelCustomer 分配" . $id . " --> " . $userId);
+                $customService->assign($id, $userId, 0, CustomerService::ASSIGN_TYPE_NEW);
+                break;
+            }
+        }
+        return $id;
+    }
 }

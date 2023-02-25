@@ -68,8 +68,29 @@ class SystemUser extends Model
         return $this->where('id', '!=', $userId)->get();
     }
 
+    public function getAllUserWithDelMap($userId = 0) {
+        $userList = $this->getAllUserWithDel($userId);
+        return collect($userList)->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['name']];
+        })->toArray();
+    }
+
+    public function getAllUserTeamWithDelMap($userId = 0) {
+        $userList = $this->getAllUserWithDel($userId);
+        return collect($userList)->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['team_id']];
+        })->toArray();
+    }
+
     public function getAllUser($userId = 0) {
         return $this->where('status', 1)->where('is_del', 0)->where('id', '!=', $userId)->get();
+    }
+
+    public function getAllUserMap($userId = 0) {
+        $userList = $this->getAllUser($userId);
+        return collect($userList)->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['name']];
+        })->toArray();
     }
 
     public function getAllUserByParentId($parentId = 0) {

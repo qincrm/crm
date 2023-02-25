@@ -15,10 +15,26 @@ class SystemTeam extends Model
 
     public $timestamps = false;
 
+    /**
+     * 获取所有团队
+     */
     public function getAllTeam() {
         return $this->where('status', 1)->get();
     }
 
+    /**
+     * 获取所有团队转成KV
+     */
+    public function getAllTeamMap() {
+        $list = $this->getAllTeam();
+        return collect($list)->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['name']];
+        })->toArray();
+    }
+
+    /**
+     * 通用查询
+     */
     private function _createWhere($params) {
         $query = $this->where('status', 1);
         if (isset($params['name']) && $params['name'] !== "") {
@@ -30,11 +46,18 @@ class SystemTeam extends Model
         return $query;
     }
 
+    /**
+     * 通用查询
+     */
     public function getLists($params) {
         $offset = ($params['current'] - 1) * $params['pageSize'];
         $list = $this->_createWhere($params)->orderBy("id", "desc")->skip($offset)->take($params['pageSize'])->get();
         return $list;
     }
+
+    /**
+     * 通用查询
+     */
     public function getCount($params) {
         return $this->_createWhere($params)->count();
     }

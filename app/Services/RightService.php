@@ -127,17 +127,17 @@ class RightService
     public function getCustomViews($userId) {
         // 如果有角色是可以查看所有客户权限，直接返回all
         $model = new SystemRole();
+        $userModel = new SystemUser();
         $roles = $model->getRoleByUserId($userId);
         foreach ($roles as $role) {
             if ($role->views == 1) {
-                return 'all';
+                return  $userModel->getAllUserMap();
             }
         }
         // 如果只能查看下级权限，递归查询下级
         $allUserId = [];
         $this->getSubUserids($userId, $allUserId);
-        $model = new SystemUser();
-        $user = $model->find($userId);
+        $user = $userModel->find($userId);
         $allUserId[$userId] = $user->name;
         return $allUserId;
     }

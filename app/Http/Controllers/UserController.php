@@ -5,21 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Captcha;
 use App\Models\Customer;
 use App\Models\CustomerBack;
-use App\Models\Excel\CustomerModel;
 use App\Models\Notice;
 use App\Models\SystemDict;
 use App\Models\SystemRight;
-use App\Models\SystemSetting;
 use App\Models\SystemTeam;
 use App\Models\SystemUser;
-use App\Models\SystemUserRole;
 use App\Services\ApproveService;
 use App\Services\Hook\LoginHook;
 use App\Services\RightService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use LDAP\Result;
-use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -44,23 +38,11 @@ class UserController extends Controller
         } else if ($user->password != md5($password . $user->password_salt)) {
             return $this->apiReturn(static::ERROR, [], "账号或密码错误");
         }
-        $model = new SystemUserRole();
-        $roles = $model->getRoleByUserId($user->id);
-        $rolesIds = array_column($roles, 'role_id');
-        $setting = SystemSetting::find(1);
-        if ($setting['ip']) {
-            $ip = explode(",", $setting['ip']) ;
-            if (!in_array($request->ip(), $ip) && !in_array(1, $rolesIds)) {
-                return $this->apiReturn(static::ERROR, [], "非法IP, 请联系管理员");
-            }
+        if (!LoginHook::canLogin($user->id, $request)){
+            return $this->apiReturn(static::ERROR, [], "非法IP, 请联系管理员");
         }
+        $page = LoginHook::getPage($user->id);
         $request->session()->put('user_id', $user->id);
-        $service = app(\App\Services\RightService::class);
-        $realMenus = ($service->getRightTree($user->id)['tree']);
-        foreach ($realMenus as $menu) {
-            $page = $menu['path'];
-            break;
-        }
         return $this->apiReturn(static::OK, ["token" => 12345, 'page' => $page]);
     }
 
@@ -84,21 +66,14 @@ class UserController extends Controller
         $noticeModel = new Notice();
 
         $userId = $request->session()->get('user_id');
-        $userList = $userModel->getAllUser();
-        $userArray = collect($userList)->mapWithKeys(function ($item) {
-            return [$item['id'] => $item['name']];
-        })->toArray();
-
-        $teams = $teamModel->getAllTeam();
-        $teamArray = collect($teams)->mapWithKeys(function ($item) {
-            return [$item['id'] => $item['name']];
-        })->toArray();
+        $userArray = $userModel->getAllUserMap();
+        $teamArray = $teamModel->getAllTeamMap();
 
         $user = SystemUser::where('id', $userId)->first();
         $data = [
             "name" => $user->name,
             "mobile" => $user->mobile,
-            "deparment" => $teamArray[$user->team_id],
+            "department" => $teamArray[$user->team_id],
             "leader" => $userArray[$user->parent_id],
             "avatar" => '/resource/av.png',
             "online" => $user->online == 1 ? true : false,
@@ -159,7 +134,6 @@ class UserController extends Controller
             $notice->remark = $notice->remark . " (客户姓名:" .$custom['name'] . ")";
             $noticeList[$key] = $notice;
         }
-        $myCustomer = 8;
         $users = [];
         $followUserArray = app(RightService::class)->getCustomViews($userId);
         if ($followUserArray != 'all') {
@@ -219,7 +193,4 @@ class UserController extends Controller
     public function donothing(Request $request) {
     }
 
-    public function test(Request $request){
-        (new ApproveService())->createApprove(7, 1, ['nihao'=>'sdfsdf'], 1, [1,22]);
-    }
 }
