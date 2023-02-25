@@ -18,11 +18,8 @@ class Rule5
         }
         $customService = app(CustomerService::class);
         $time = time() - $config['day'] * 3600 * 24;
-        if ($config['type'] == 1) {
-            $sql = "select * from customer where follow_status in (".implode(",", $config['values']).") and follow_user_id > 0 and assign_time < ? and follow_time < ?"; // 星级为0且分配时间超过2天
-        } else if ($config['type'] == 2) {
-            $sql = "select * from customer where star in  (".implode(",", $config['values']).") and follow_user_id > 0 and assign_time < ? and follow_time < ?"; // 星级为0且分配时间超过2天
-        }
+        $field = $config['type'] == 1 ? 'follow_status' : 'star';
+        $sql = "select * from customer where ".$field." in (".implode(",", $config['values']).") and follow_user_id > 0 and assign_time < ? and follow_time < ?"; // 星级为0且分配时间超过2天
         $data = app('db')->select($sql, [$time, $time]);
         foreach ($data as $item) {
             echo "RULE5: 超过".$config['day']."天没有跟进，流入公共池, id: ".$item->id.PHP_EOL;
