@@ -20,139 +20,105 @@ class Customer extends Model
 
 
     private function _createWhere($params) {
-        $query = $this;
-        if (isset($params['name']) && $params['name'] !== "") {
-            $query = $query->where('name', 'like', '%'.$params['name'].'%');
-        }
-        if (isset($params['mobile']) && $params['mobile'] !== "") {
-            $query = $query->where('mobile',  $params['mobile']);
-        }
-        if (isset($params['city']) && $params['city'] !== "") {
-            $query = $query->where('city',  $params['city']);
-        }
-        if (isset($params['followUserId']) && $params['followUserId'] !== "") {
-            $query = $query->where('follow_user_id',  $params['followUserId']);
-        }
-        
-        if (isset($params['followStatus']) && $params['followStatus'] !== "") {
-            $query = $query->where('follow_status',  $params['followStatus']);
-        }
-        if (isset($params['star']) && $params['star'] !== "") {
+        $query = $this->when(isset($params['name']) && $params['name'] !== "", function ($query) use ($params) {
+            return $query->where('name', 'like', '%'.$params['name'].'%');
+        })->when(isset($params['mobile']) && $params['mobile'] !== "", function ($query) use ($params) {
+            return $query->where('mobile',  $params['mobile']);
+        })->when(isset($params['city']) && $params['city'] !== "", function ($query) use ($params) {
+            return $query->where('city',  $params['city']);
+        })->when(isset($params['followUserId']) && $params['followUserId'] !== "", function ($query) use ($params) {
+            return $query->where('follow_user_id',  $params['followUserId']);
+        })->when(isset($params['followStatus']) && $params['followStatus'] !== "", function($query) use ($params) {
+            return $query->where('follow_status',  $params['followStatus']);
+        })->when(isset($params['star']) && $params['star'] !== "", function($query) use ($params) {
             if ($params['star'] == 6) {
-                $query = $query->where('star', '>=', '2');
+                return $query->where('star', '>=', '2');
             } else if ($params['star'] == 7) {
-                $query = $query->where('star', '>=', '3');
+                return $query->where('star', '>=', '3');
             } else if ($params['star'] == 8) {
-                $query = $query->where('star', '>=', '4');
+                return $query->where('star', '>=', '4');
             } else {
-                $query = $query->where('star',  $params['star']);
+                return $query->where('star',  $params['star']);
             }
-        }
-        if ($params['custom_ids']) {
-            $query = $query->whereIn('id', $params['custom_ids']);
-        }
-        if (isset($params['userFrom']) && $params['userFrom'] !== "") {
-            $query = $query->where('user_from',  $params['userFrom']);
-        }
-        if (isset($params['source']) && $params['source'] !== "") {
-            $query = $query->where('source',  $params['source']);
-        }
-        if (isset($params['channel']) && $params['channel'] !== "") {
-            $query = $query->where('source',  $params['channel']);
-        }
-        if (isset($params['zizhi']) && is_array($params['zizhi']) && in_array(1, $params['zizhi'])) {
-            $query = $query->where('house', "!=", 1);
-        }
-        if (isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(2, $params['zizhi'])) {
-            $query = $query->where('car',  "!=", 1);
-        }
-        if (isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(3, $params['zizhi'])) {
-            $query = $query->where('policy',  "!=", 1);
-        }
-        if (isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(4, $params['zizhi'])) {
-            $query = $query->where('insurance',   "!=",1);
-        }
-        if (isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(5, $params['zizhi'])) {
-            $query = $query->where('funds',   "!=",1);
-        }
-        if (isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(6, $params['zizhi'])) {
-            $query = $query->where('credit', 1);
-        }
-        if (isset($params['notFollow']) && $params['notFollow']!= '') {
-            $query = $query->where('follow_user_id',  '>', 0)
+        })->when($params['custom_ids'], function($query) use ($params) {
+            return $query->whereIn('id', $params['custom_ids']);
+        })->when(isset($params['userFrom']) && $params['userFrom'] !== "", function($query) use ($params) {
+            return $query->where('user_from',  $params['userFrom']);
+        })->when(isset($params['source']) && $params['source'] !== "", function($query) use ($params) {
+            return $query->where('source',  $params['source']);
+        })->when(isset($params['channel']) && $params['channel'] !== "", function($query) use ($params) {
+            return $query->where('source',  $params['channel']);
+        })->when(isset($params['zizhi']) && is_array($params['zizhi']) && in_array(1, $params['zizhi']), function($query) use ($params) {
+            return $query->where('house', "!=", 1);
+        })->when(isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(2, $params['zizhi']), function($query) use ($params) {
+            return $query->where('car',  "!=", 1);
+        })->when(isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(3, $params['zizhi']), function($query) use ($params) {
+            return $query->where('policy',  "!=", 1);
+        })->when(isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(4, $params['zizhi']), function($query) use ($params) {
+            return $query->where('insurance',   "!=",1);
+        })->when(isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(5, $params['zizhi']), function($query) use ($params) {
+            return $query->where('funds',   "!=",1);
+        })->when(isset($params['zizhi'])  && is_array($params['zizhi']) && in_array(6, $params['zizhi']), function($query) use ($params) {
+            return $query->where('credit', 1);
+        })->when(isset($params['notFollow']) && $params['notFollow']!= '', function($query) use ($params) {
+            return $query->where('follow_user_id',  '>', 0)
                         ->where('assign_time', '<', time() - ($params['notFollow'] * 24 *3600))
                         ->where('follow_time', '<', time() - ($params['notFollow'] * 24 *3600));
-        }
-        if (isset($params['createTime']) && !empty($params['createTime']) && is_array($params['createTime']) ) {
+        })->when(isset($params['createTime']) && !empty($params['createTime']) && is_array($params['createTime']), function($query) use ($params ) {
             $query = $query->where('apply_time',  '>', strtotime($params['createTime'][0]));
-            $query = $query->where('apply_time',  '<', strtotime($params['createTime'][1]));
-        }
-        if (isset($params['followTime']) && !empty($params['followTime']) && is_array($params['followTime']) ) {
+            return $query->where('apply_time',  '<', strtotime($params['createTime'][1]));
+        })->when(isset($params['followTime']) && !empty($params['followTime']) && is_array($params['followTime']), function($query) use ($params ) {
             $query = $query->where('follow_time',  '>', strtotime($params['followTime'][0]));
-            $query = $query->where('follow_time',  '<', strtotime($params['followTime'][1]));
-        }
-        if ($params['type'] == 'CustomerList') {
+            return $query->where('follow_time',  '<', strtotime($params['followTime'][1]));
+        })->when($params['type'] == 'CustomerList', function($query) use ($params) {
+            return $query->where('follow_user_id', '>' , 0);
+        })->when($params['type'] == 'CustomerImportList', function($query) use ($params) {
             $query = $query->where('follow_user_id', '>' , 0);
-        }
-        if ($params['type'] == 'CustomerImportList') {
+            return $query->where('important',  1);
+        })->when($params['team_id'], function($query) use ($params) {
+            $teamModel = new SystemUser();
+            $userIds = $teamModel->getUserByTeamid($params['team_id'])->map(function($item) {return $item['id'];});
+            return $query->whereIn('follow_user_id', $userIds);
+        })->when($params['type'] == 'CustomerNewList', function($query) use ($params) {
             $query = $query->where('follow_user_id', '>' , 0);
-            $query = $query->where('important',  1);
-        }
+            $query = $query->where('important',  0);
+            return $query->where('user_from',  1);
+        })->when($params['type'] == 'CustomerInnerList', function($query) use ($params) {
+            $query = $query->where('follow_user_id', '>' , 0);
+            $query = $query->where('important',  0);
+            return $query->where('user_from', '!=', 1);
+        })->when(isset($params['users']) && in_array($params['type'], ['CustomerImportList', 'CustomerInnerList', 'CustomerNewList', 'CustomerList']), function($query) use ($params) {
+            if ($params['users']) {
+                return $query->whereIn('follow_user_id',  $params['users']);
+            } else {
+                return $query->where('follow_user_id', 99999999);
+            }
+        })->when($params['type'] == 'CustomerNewpool', function($query) use ($params) {
+            $query = $query->where('follow_user_id',  0);
+            return $query->where('user_from',  1);
+        })->when($params['type'] == 'CustomerPool', function($query) use ($params) {
+            $query = $query->where('follow_user_id',  0);
+            return $query->where('user_from', '!=', 1);
+        })->when($params['timeType'] == 1, function($query) use ($params) {
+            return $query->where('create_time', '>', date('Y-m-d 00:00:00'));
+        })->when($params['timeType'] == 2, function($query) use ($params) {
+            return $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-1 day")));
+        })->when($params['timeType'] == 3, function($query) use ($params) {
+            return $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-2 day")));
+        })->when($params['timeType'] == 4, function($query) use ($params) {
+            $time = time();
+            $monday = date('Y-m-d 00:00:00', ($time - ((date('w',$time) == 0 ? 7 : date('w',$time)) - 1) * 24 * 3600));
+            return $query->where('create_time', '>', $monday);
+        })->when($params['timeType'] == 5, function($query) use ($params) {
+            return $query->where('create_time', '>', date("Y-m-01 00:00:00"));
+        })->when($params['timeType'] == 6, function($query) use ($params) {
+            $query = $query->where('create_time', '>', $params['times'][0]. ' 00:00:00');
+            return $query->where('create_time', '<', $params['times'][1]. ' 00:00:00');
+        });
         if ($params['type'] == 'CustomerUnvalid') {
             $query = $query->where('status',  0);
         } else {
             $query = $query->where('status',  1);
-        }
-        if ($params['team_id']) {
-            $teamModel = new SystemUser();
-            $userIds = $teamModel->getUserByTeamid($params['team_id'])->map(function($item) {return $item['id'];});
-            $query = $query->whereIn('follow_user_id', $userIds);
-        }
-        if ($params['type'] == 'CustomerNewList') {
-            $query = $query->where('follow_user_id', '>' , 0);
-            $query = $query->where('important',  0);
-            $query = $query->where('user_from',  1);
-        } 
-        if ($params['type'] == 'CustomerInnerList') {
-            $query = $query->where('follow_user_id', '>' , 0);
-            $query = $query->where('important',  0);
-            $query = $query->where('user_from', '!=', 1);
-        } 
-        if (isset($params['users']) && in_array($params['type'], ['CustomerImportList', 'CustomerInnerList', 'CustomerNewList', 'CustomerList'])) {
-            if ($params['users']) {
-                $query = $query->whereIn('follow_user_id',  $params['users']);
-            } else {
-                $query = $query->where('follow_user_id', 99999999);
-            }
-        }
-        if ($params['type'] == 'CustomerNewpool') {
-            $query = $query->where('follow_user_id',  0);
-            $query = $query->where('user_from',  1);
-        }
-        if ($params['type'] == 'CustomerPool') {
-            $query = $query->where('follow_user_id',  0);
-            $query = $query->where('user_from', '!=', 1);
-        }
-        if ($params['timeType'] == 1) {
-            $query = $query->where('create_time', '>', date('Y-m-d 00:00:00'));
-        }
-        if ($params['timeType'] == 2) {
-            $query = $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-1 day")));
-        }
-        if ($params['timeType'] == 3) {
-            $query = $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-2 day")));
-        }
-        if ($params['timeType'] == 4) {
-            $time = time();
-            $monday = date('Y-m-d 00:00:00', ($time - ((date('w',$time) == 0 ? 7 : date('w',$time)) - 1) * 24 * 3600));
-            $query = $query->where('create_time', '>', $monday);
-        }
-        if ($params['timeType'] == 5) {
-            $query = $query->where('create_time', '>', date("Y-m-01 00:00:00"));
-        }
-        if ($params['timeType'] == 6) {
-            $query = $query->where('create_time', '>', $params['times'][0]. ' 00:00:00');
-            $query = $query->where('create_time', '<', $params['times'][1]. ' 00:00:00');
         }
         return $query;
     }

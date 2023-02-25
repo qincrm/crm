@@ -40,18 +40,17 @@ class SystemUserController extends Controller
     public function edit(Request $request) {
         $params = $request->all();
         $model = new SystemUser();
+        $query = $model->where('mobile', $params['mobile'])->where('id', '!=', $params['id']);
         if (isset($params['id'])) {
-            if (count($model->where('mobile', $params['mobile'])->where('id', '!=', $params['id'])->where('is_del', 0)->get()) > 0) {
-                return $this->apiReturn(static::ERROR, [], '手机号已存在');
-            }
+            $query = $query->where('is_del', 0);
             $model = $model->find($params['id']);
         } else {
-            if (count($model->where('mobile', $params['mobile'])->where('is_del', 0)->get()) > 0) {
-                return $this->apiReturn(static::ERROR, [], '手机号已存在');
-            }
             $defultPwd= "crm123456";
             $model->password_salt = rand(100000, 999999);
             $model->password = md5($defultPwd. $model->password_salt);
+        }
+        if (count($query->get()) > 0) {
+            return $this->apiReturn(static::ERROR, [], '手机号已存在');
         }
         $model->name = $params['name'];
         $model->mobile = $params['mobile'];
