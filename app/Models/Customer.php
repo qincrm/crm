@@ -137,87 +137,66 @@ class Customer extends Model
     }
 
     public function _createChannelWhere($params) {
-        $query = $this;
-        if ($params['users']) {
-            $query = $query->whereIn('follow_user_id', $params['users']);
-        }
-        if ($params['user_id']) {
-            $query = $query->where('follow_user_id', $params['user_id']);
-        }
-        if ($params['team_id']) {
+        $query = $this->when($params['users'], function ($query) use ($params) {
+            return $query->whereIn('follow_user_id', $params['users']);
+        })->when($params['user_id'], function ($query) use ($params) {
+            return $query->where('follow_user_id', $params['user_id']);
+        })->when($params['team_id'], function ($query) use ($params) {
             $teamModel = new SystemUser();
             $userIds = $teamModel->getUserByTeamid($params['team_id'])->map(function($item) {return $item['id'];});
-            $query = $query->whereIn('follow_user_id', $userIds);
-        }
-        if ($params['source']) {
-            $query = $query->where('source',  $params['source']);
-        }
-        if ($params['timeType'] == 1) {
-            $query = $query->where('create_time', '>', date('Y-m-d 00:00:00'));
-        }
-        if ($params['timeType'] == 2) {
+            return $query->whereIn('follow_user_id', $userIds);
+        })->when($params['source'], function ($query) use ($params) {
+            return $query->where('source',  $params['source']);
+        })->when($params['timeType'] == 1, function ($query) use ($params) {
+            return $query->where('create_time', '>', date('Y-m-d 00:00:00'));
+        })->when($params['timeType'] == 2, function ($query) use ($params) {
             $query = $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-1 day")));
-            $query = $query->where('create_time', '<', date('Y-m-d 00:00:00'));
-        }
-        if ($params['timeType'] == 3) {
-            $query = $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-2 day")));
-        }
-        if ($params['timeType'] == 4) {
+            return $query->where('create_time', '<', date('Y-m-d 00:00:00'));
+        })->when($params['timeType'] == 3, function ($query) use ($params) {
+            return $query->where('create_time', '>', date('Y-m-d 00:00:00', strtotime("-2 day")));
+        })->when($params['timeType'] == 4, function ($query) use ($params) {
             $time = time();
             $monday = date('Y-m-d 00:00:00', ($time - ((date('w',$time) == 0 ? 7 : date('w',$time)) - 1) * 24 * 3600));
-            $query = $query->where('create_time', '>', $monday);
-        }
-        if ($params['timeType'] == 5) {
-            $query = $query->where('create_time', '>', date("Y-m-01 00:00:00"));
-        }
-        if ($params['timeType'] == 6) {
+            return $query->where('create_time', '>', $monday);
+        })->when($params['timeType'] == 5, function ($query) use ($params) {
+            return $query->where('create_time', '>', date("Y-m-01 00:00:00"));
+        })->when($params['timeType'] == 6, function ($query) use ($params) {
             $query = $query->where('create_time', '>', $params['times'][0]. ' 00:00:00');
-            $query = $query->where('create_time', '<', $params['times'][1]. ' 23:59:59');
-        }
+            return $query->where('create_time', '<', $params['times'][1]. ' 23:59:59');
+        });
         return $query;
     }
     public function getListsGroupByChannel($params) {
-        $list = $this->_createChannelWhere($params)->select('source', 'star', DB::raw('count(*) as cnt'))->groupBy('source', 'star')->get();
-        return $list;
+        return $this->_createChannelWhere($params)->select('source', 'star', DB::raw('count(*) as cnt'))->groupBy('source', 'star')->get();
     }
     public function getListsGroupByChannel2($params) {
-        $groupby = 'source';
-        if ($params['type'] == 'user') {
-            $groupby = 'follow_user_id';
-        }
-        $list = $this->_createChannelWhere($params)->select($groupby, DB::raw('CASE follow_status WHEN 0 THEN 0 ELSE 1 END as follow_status1'), DB::raw('count(*) as cnt'))->groupBy($groupby, 'follow_status1')->get();
+        $list = $this->_createChannelWhere($params)->select('source', DB::raw('CASE follow_status WHEN 0 THEN 0 ELSE 1 END as follow_status1'), DB::raw('count(*) as cnt'))
+                ->groupBy('source', 'follow_status1')->get();
         return $list;
     }
 
     public function getMyCount($params) {
-        $query = $this;
-        if ($params['users']) {
-            $query = $query->whereIn('follow_user_id', $params['users']);
-        }
-        if ($params['important']) {
-            $query = $query->where('important', $params['important']);
-        }
-        if ($params['today']) {
-            $query = $query->where('assign_time', '>', strtotime(date('Y-m-d')));
-        }
-        if (isset($params['follow_status']) && $params['follow_status'] !== "") {
-            $query = $query->where('follow_status',  $params['follow_status']);
-        }
-        if ($params['new']) {
+        $query = $this->when($params['users'], function ($query) use ($params) {
+            return $query->whereIn('follow_user_id', $params['users']);
+        })->when($params['important'], function ($query) use ($params) {
+            return $query->where('important', $params['important']);
+        })->when($params['today'], function ($query) use ($params) {
+            return $query->where('assign_time', '>', strtotime(date('Y-m-d')));
+        })->when(isset($params['follow_status']) && $params['follow_status'] !== "", function ($query) use ($params) {
+            return $query->where('follow_status',  $params['follow_status']);
+        })->when($params['new'], function ($query) use ($params) {
             $query = $query->where('follow_user_id', '>' , 0);
             $query = $query->where('important',  0);
-            $query = $query->where('user_from', 1);
-        }
-        if ($params['inner']) {
+            return $query->where('user_from', 1);
+        })->when($params['inner'], function ($query) use ($params) {
             $query = $query->where('follow_user_id', '>' , 0);
             $query = $query->where('important',  0);
-            $query = $query->where('user_from', '!=', 1);
-        }
+            return $query->where('user_from', '!=', 1);
+        });
         return $query->count();
     }
     public function getCustomerByChannelId($channel, $channelId) {
-        $list = $this->where('source', $channel)->get();
-        return $list;
+        return $this->where('source', $channel)->get();
     }
  
 

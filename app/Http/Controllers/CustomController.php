@@ -114,14 +114,14 @@ class CustomController extends Controller
             app(ToolService::class)->csv(
                 "我的客户",
                 [
-                    "id" =>       "id",
-                    "name" =>       "姓名",
-                    "mobile"  =>   "手机号",
-                    "star" =>   "星级",
-                    "source" =>         "渠道",
-                    "follow_status" =>       "跟进状态",
-                    "remark" =>        "跟进备注"  ,
-                    "follow_time" =>    "最新跟进时间" ,
+                    "id" => "id",
+                    "name" => "姓名",
+                    "mobile" => "手机号",
+                    "star" => "星级",
+                    "source" => "渠道",
+                    "follow_status" => "跟进状态",
+                    "remark" => "跟进备注"  ,
+                    "follow_time" => "最新跟进时间" ,
                 ],
                 $list
             );

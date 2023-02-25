@@ -71,28 +71,33 @@ class CustomerLog extends Model
     public function getLogListByCustomerId($customerId, $limit) {
         $dictModel = new SystemDict();
         $userModel = new SystemUser();
-        $followUserList = $userModel->getAllUserWithDel();
-        $followUserArray = ($followUserList)->mapWithKeys(function ($item) {
-            return [$item['id'] => $item['name']];
-        })->toArray();
+        $followUserArray = $userModel->getAllUserWithDelMap();
         $dict = $dictModel->getListByGroup($dictModel::GROUP_CUSTOM);
         $list = $this->where('customer_id', $customerId)->orderBy("id", "desc")->take($limit)->get();
         foreach ($list as $key => $item) {
-            if ($item['type'] == static::TYPE_STAR) {
-                $item['remark'] .= "(".$dict[$dictModel::TYPE_STAR][$item['before']]."->".$dict[$dictModel::TYPE_STAR][$item['after']].")";
-            } else if ($item['type'] == static::TYPE_FOLLOW) {
-                $item['remark'] .= "(".$dict[$dictModel::TYPE_FOLLOW][$item['before']]."->".$dict[$dictModel::TYPE_FOLLOW][$item['after']].")";
-            } else if ($item['type'] == static::TYPE_ASSIGN) {
-                $item['remark'] = CustomerService::ASSIGN_TYPE_MAPPING[$item['remark']] . "(".$followUserArray[$item['before']]."->".$followUserArray[$item['after']].")";
-            } else if ($item['type'] == static::TYPE_ASSIGN_NEW) {
-                $item['remark'] = CustomerService::ASSIGN_TYPE_MAPPING[$item['remark']] . "(".$followUserArray[$item['before']]."->".$followUserArray[$item['after']].")";
-            } else if ($item['type'] == static::TYPE_GET) {
-                $item['remark'] = CustomerService::ASSIGN_TYPE_MAPPING[$item['remark']] . "(".$followUserArray[$item['before']]."->".$followUserArray[$item['after']].")";
-            } else if ($item['type'] == static::TYPE_DIANPING) {
-                $item['remark'] = $item['remark'];
-            } else if ($item['type'] == static::TYPE_INTRO) {
-                $custom = Customer::find($item['before']);
-                $item['remark'] = '转介绍('.$item['before'].'-'.$custom['name'].')';
+            switch($item['type']) {
+                case static::TYPE_STAR:
+                    $item['remark'] .= "(".$dict[$dictModel::TYPE_STAR][$item['before']]."->".$dict[$dictModel::TYPE_STAR][$item['after']].")";
+                    break;
+                case static::TYPE_FOLLOW:
+                    $item['remark'] .= "(".$dict[$dictModel::TYPE_FOLLOW][$item['before']]."->".$dict[$dictModel::TYPE_FOLLOW][$item['after']].")";
+                    break;
+                case static::TYPE_ASSIGN:
+                    $item['remark'] = CustomerService::ASSIGN_TYPE_MAPPING[$item['remark']] . "(".$followUserArray[$item['before']]."->".$followUserArray[$item['after']].")";
+                    break;
+                case static::TYPE_ASSIGN_NEW:
+                    $item['remark'] = CustomerService::ASSIGN_TYPE_MAPPING[$item['remark']] . "(".$followUserArray[$item['before']]."->".$followUserArray[$item['after']].")";
+                    break;
+                case static::TYPE_GET:
+                    $item['remark'] = CustomerService::ASSIGN_TYPE_MAPPING[$item['remark']] . "(".$followUserArray[$item['before']]."->".$followUserArray[$item['after']].")";
+                    break;
+                case static::TYPE_INTRO:
+                    $item['remark'] = $item['remark'];
+                    break;
+                case static::TYPE_FOLLOW:
+                    $custom = Customer::find($item['before']);
+                    $item['remark'] = '转介绍('.$item['before'].'-'.$custom['name'].')';
+                    break;
             }
             $item['username'] = $item['user_id'] ? $followUserArray[$item['user_id']] : '系统';
             $list[$key] = $item;
