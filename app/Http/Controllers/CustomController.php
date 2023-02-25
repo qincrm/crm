@@ -496,19 +496,6 @@ class CustomController extends Controller
     public function lock(Request $request) {
         $userId = $request->session()->get('user_id');
         $params = $request->all();
-        if ($params['lock'] == 1) {
-            $configModel = new CustomerRuleConfig();
-            $rule = $configModel->find(11);
-            $status = $rule->status;
-            if ($status == 1) {
-                $config = json_decode($rule->config, true);
-                $num = $config['num'];
-                $cnt = Customer::where('follow_user_id', $userId)->where('lock', 1)->count();
-                if ($cnt > $num) {
-                    return $this->apiReturn(static::ERROR, [], "不能锁定超过".$num."个客户");
-                }
-            }
-        }
         DB::beginTransaction();
         $model = Customer::find($params['id']);
         $model->lock = $params['lock'];
