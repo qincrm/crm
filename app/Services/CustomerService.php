@@ -103,20 +103,8 @@ class CustomerService
         DB::beginTransaction();
         $customModel = new Customer();
         $custom = $customModel->lockForUpdate()->find($customId);
-        if (empty($custom)) {
-            return true;
-        }
-        if (!$this->canAssign($custom['mobile'], $customId)) {
-            Log::info("I1668771466 ".$customId." 手机号存在导致无法分配");
-            return false;
-        }
-        if ($custom->follow_user_id == $followUserId) {
-            return true;
-        }
-
         $oldFollowUserId = $custom->follow_user_id;
-
-        if ($oldFollowUserId != 0 && $assignType == CustomerService::ASSIGN_TYPE_NEW) {
+        if (empty($custom) || $oldFollowUserId == $followUserId || ($oldFollowUserId != 0 && $assignType == CustomerService::ASSIGN_TYPE_NEW)) {
             // 新用户已经分配了退出
             return true;
         }
@@ -129,11 +117,11 @@ class CustomerService
             }
         }
 
-
         if ($custom->first_follow_user_id == 0) {
             $custom->first_follow_user_id = $followUserId;
         }
 
+        $result = true;
         $custom->follow_user_id = $followUserId;
         $custom->assign_time = time();
         $custom->status = 1;
@@ -142,22 +130,22 @@ class CustomerService
             $custom->user_from = 2;
         }
         $flag = $custom->save();
-
         if (!$flag) {
-            DB::rollBack();
-            return false;
+            $result = false;
         }
-
 
         $logModel = new CustomerLog();
         $logType =  $assignType == static::ASSIGN_TYPE_NEW ? $logModel::TYPE_ASSIGN_NEW : $logModel::TYPE_ASSIGN;
         $flag = $logModel->saveLog($logType, $customId, $oldFollowUserId, $followUserId, $operUserId, $assignType);
-
         if (!$flag) {
-            DB::rollBack();
-            return false;
+            $result = false;
         }
-        DB::commit();
+
+        if ($result) {
+            DB::commit();
+        } else {
+            DB::rollBack();
+        }
         return true;
     }
 
