@@ -1,4 +1,5 @@
-# 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url]
+# 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url] [![Github Action](https://github.com/qincrm/crm/workflows/install/badge.svg)](https://github.com/qincrm/crm/actions)
+
 
 [codeclimate-img-url]: https://codeclimate.com/github/qincrm/crm.svg
 [codeclimate-url]: https://codeclimate.com/github/qincrm/crm
