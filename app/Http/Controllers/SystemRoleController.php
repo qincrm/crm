@@ -82,22 +82,10 @@ class SystemRoleController extends Controller
         $selectRightList = $service->getRightTree();
         if (isset($params['id']) && $params['id']) {
             $model = $model->find($params['id']);
-            $model['fields1'] = $model['fields2'] = $model['fields3'] = [];
-            if ($model['fields']) {
-                $fields = explode(',', $model['fields']);
-                foreach ($fields as $field) {
-                    if (array_key_exists($field, $selectFieldList[1])) {
-                        $fields1[] = $field;
-                    } else if (array_key_exists($field, $selectFieldList[2])) {
-                        $fields2[] = $field;
-                    } else if (array_key_exists($field, $selectFieldList[3])) {
-                        $fields3[] = $field;
-                    }
-                } 
-                if ($fields1) {$model['fields1'] = $fields1;}
-                if ($fields2) {$model['fields2'] = $fields2;}
-                if ($fields3) {$model['fields3'] = $fields3;}
-            }
+            $fields = explode(',', $model['fields']);
+            $model['fields1'] = array_values(array_intersect($fields, array_keys($selectFieldList[1]))); 
+            $model['fields2'] = array_values(array_intersect($fields, array_keys($selectFieldList[2]))); 
+            $model['fields3'] = array_values(array_intersect($fields, array_keys($selectFieldList[3]))); 
             ($selectRightList['leafs'][] = 31);
             $rights = app(ToolService::class)->objColumn($rightModel->getRightByRoleId($params['id']), 'id');
             $model['rights']= array_values(array_intersect($rights, $selectRightList['leafs']));
