@@ -12,4 +12,4 @@ RUN echo "display_errors = Off" > $PHP_INI_DIR/conf.d/errors.ini
 
 COPY entrypoint.sh /tmp/entrypoint.sh
 
-ENTRYPOINT ["/tmp/entrypoint.sh"]
+ENTRYPOINT ["sh /tmp/entrypoint.sh"]
