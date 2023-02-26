@@ -1,4 +1,4 @@
-# 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url] [![Github Action](https://github.com/qincrm/crm/workflows/install/badge.svg)](https://github.com/qincrm/crm/actions)
+# 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url] [![Github Action](https://github.com/qincrm/crm/workflows/install/badge.svg)](https://github.com/qincrm/crm/actions) [![Powered by lumen](https://img.shields.io/badge/Powered_by-Lumen-green.svg?style=flat)](https://lumen.laravel.com/) [![Powered by ArcoDesign](https://img.shields.io/badge/Powered_by-ArcoDesign-green.svg?style=flat)](https://github.com/arco-design/arco-design)
 
 
 [codeclimate-img-url]: https://codeclimate.com/github/qincrm/crm.svg
