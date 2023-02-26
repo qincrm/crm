@@ -9,7 +9,6 @@ class Captcha {
     /**
      * 验证码
      * 
-     * @author zhaoyuhao 2021-10-01
      */ 
     public function create($request) {
 
