@@ -45,6 +45,16 @@ class ToolService
     }
 
     /**
+     * 清理空字段
+     */
+    public static function unsetEmptyField($model, $fields = []) {
+        foreach ($fields as $field) {
+            if (empty($model[$field])) unset($model[$field]);
+        }
+        return $model;
+    }
+
+    /**
      * 导出csv
      */
     public function csv($downname, $header, $data) {
@@ -71,5 +81,6 @@ class ToolService
         ob_start();//对输出数据进行压缩，可减少用户下载时候的等待时间
         echo file_get_contents($tempfile);
         ob_end_flush();//结束压缩
+        exit;
     }
 }

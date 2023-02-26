@@ -126,7 +126,6 @@ class CustomController extends Controller
                 ],
                 $list
             );
-            return;
         }
         return $this->apiReturn(static::OK, $data);
     }
@@ -144,17 +143,6 @@ class CustomController extends Controller
         $dictModel = new SystemDict();
         $customModel = new Customer();
 
-        $roleModel = new SystemRole();
-        $productModel  = new Product();
-        $quanzheng = $roleModel->getUserByRoleId(2);
-        $quanzhengUserArray = collect($quanzheng)->mapWithKeys(function ($item) {
-            return [$item->id => $item->name];
-        })->toArray();
-        $products = $productModel->getAllProduct();
-        $productArray = collect($products)->mapWithKeys(function ($item) {
-            return [$item->id => $item->name];
-        })->toArray();
-        
         // 获取客户维度的码表
         $customGourpDict = $dictModel->getListByGroup($dictModel::GROUP_CUSTOM); 
         $data['cityList'] = app(SelectService::class)->genSelectByKV($customGourpDict[$dictModel::TYPE_CITY]); // 城市
@@ -164,31 +152,17 @@ class CustomController extends Controller
         $data['sourceList'] = app(SelectService::class)->genSelectByKV($customGourpDict[$dictModel::TYPE_SOURCE]); // 渠道来源
         $data['zizhiList'] = app(SelectService::class)->genSelectByKV($customGourpDict[$dictModel::TYPE_QUALIFICATION]); // 资质说明
         $data['workList'] = app(SelectService::class)->genSelectByKV($customGourpDict[$dictModel::TYPE_WORK]); // 工作类型
-        unset($customGourpDict[$dictModel::TYPE_NOTICE][5]);
         $data['noticesList'] = app(SelectService::class)->genSelectByKV($customGourpDict[$dictModel::TYPE_NOTICE]); // 通知类型
-        $data['quanzhengList'] = app(SelectService::class)->genSelectByKV($quanzhengUserArray); //权证 
-        $data['productList'] = app(SelectService::class)->genSelectByKV($productArray); //权证 
         $logList = [];
 
         if (isset($params['id']) && !empty($params['id'])) {
             $model = $customModel->find($params['id']);
-
             $followUserArray = app(RightService::class)->getCustomViews($userId);
             // 防止越权
-            if ($followUserArray != 'all' && !in_array($model->follow_user_id, array_keys($followUserArray))) {
+            if (!in_array($model->follow_user_id, array_keys($followUserArray))) {
                 return $this->apiReturn(static::ERROR, [], '无客户权限');
             }
-            if (empty($model['sex'])) unset($model['sex']);
-            if (empty($model['age'])) unset($model['age']);
-            if (empty($model['marry'])) unset($model['marry']);
-            if (empty($model['work'])) unset($model['work']);
-            if (empty($model['live_area'])) unset($model['live_area']);
-            if (empty($model['household_area'])) unset($model['household_area']);
-            if ($model['income'] == 0) unset($model['income']);
-            if ($model['amount'] == 0) unset($model['amount']);
-            if (empty($model['follow_status'])) unset($model['follow_status']);
-            if (empty($model['star'])) unset($model['star']);
-            if (empty($model['city'])) unset($model['city']);
+            ToolService::unsetEmptyField($model, ['sex', 'age', 'marry', 'work', 'live_area', 'household_area', 'income', 'amount', 'follow_status', 'star', 'city']);
             unset($model['remark']);
 
             // 客户操作日志大杂烩
