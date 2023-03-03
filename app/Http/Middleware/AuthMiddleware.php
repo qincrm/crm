@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class AuthMiddleware
 {
 
-    private $whiteList = ['user/menu', 'user/online', 'user/info', 'user/resetpassword', 'message/unreadlist', 'message/list', 'message/read', 'user/dashboard', 'custom/getnoticelist'];
+    private $whiteList = ['user/menu', 'user/online', 'user/info', 'user/resetpassword', 'message/unreadlist', 'message/list', 'message/read', 'user/dashboard', 'custom/getnoticelist','custom/call'];
 
     /**
      * Handle an incoming request.

@@ -35,6 +35,7 @@ class CustomerLog extends Model
     const TYPE_ASSIGN_NEW = 15; // 新数据分配
     const TYPE_INTRO = 16; // 转介绍
     const TYPE_DIANPING = 17; //
+    const TYPE_CALL = 18; //
 
     const TYPE_MAPPING = [
         self::TYPE_IN => '录入客户',
@@ -54,6 +55,7 @@ class CustomerLog extends Model
         self::TYPE_NOT_UNVALID=> '设为有效',
         self::TYPE_INTRO => '转介绍',
         self::TYPE_DIANPING => '主管点评',
+        self::TYPE_CALL => '拨打电话',
     ];
 
 
@@ -73,7 +75,7 @@ class CustomerLog extends Model
         $userModel = new SystemUser();
         $followUserArray = $userModel->getAllUserWithDelMap();
         $dict = $dictModel->getListByGroup($dictModel::GROUP_CUSTOM);
-        $list = $this->where('customer_id', $customerId)->orderBy("id", "desc")->take($limit)->get();
+        $list = $this->where('customer_id', $customerId)->whereRaw('type not in ('.static::TYPE_CALL.')')->orderBy("id", "desc")->take($limit)->get();
         foreach ($list as $key => $item) {
             switch($item['type']) {
                 case static::TYPE_STAR:
@@ -120,5 +122,9 @@ class CustomerLog extends Model
         $sql = "SELECT  count(distinct customer_id) as cnt, max(id) as id FROM customer_log where type = ? 
             and `after` = ? and create_time >= ? and create_time < ?";
         return app('db')->select($sql, [$type, $userId, $startTime, $endTime]);
+    }
+    public function getLogListByUserIdAndType($userId, $type, $offset, $pageSize) {
+        $list = $this->where('user_id', $userId)->where('type', $type)->orderBy("id", "desc")->skip($offset)->take($pageSize)->get();
+        return $list;
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Console\Commands\Websocket;
 use App\Models\Approve;
 use App\Models\ApproveDetail;
 use App\Models\Constants;
 use App\Models\Customer;
+use GuzzleHttp\Client;
 use App\Models\CustomerBack;
 use App\Models\CustomerLog;
 use App\Models\CustomerRemarkLog;
@@ -757,5 +759,41 @@ class CustomController extends Controller
             $data['approve_num'] = $service->noticeNum($userId);
         }
         return $this->apiReturn(static::OK, $data);
+    }
+
+
+     /**
+     * 打电话
+     */
+    public function call(Request $request)
+    {
+        $params = $request->all();
+        $userId = $request->session()->get('user_id');
+        $id = $params['id'];
+        $user = SystemUser::find($userId);
+        $custom =  Customer::find($id);
+        if (empty($user['token'])) {
+            return $this->apiReturn(static::ERROR, [], '请登录客户端');
+        }
+        $logModel = new CustomerLog();
+        $logModel->saveLog(CustomerLog::TYPE_CALL, $id, 0, 0, $userId);
+        $client = new Client();
+        $client->post("http://127.0.0.1:8990", [
+            'form_params'=> [
+                'data' => json_encode(
+                    [
+                        'action'=>'notify',
+                        'admin_token' => Websocket::ADMIN_TOKEN,
+                        'user_token' => $user['token'],
+                        'message' => json_encode([
+                            'action' => 'make_call',
+                            'mobile' => $custom['mobile'],
+                            'name' => $custom['name']
+                        ])
+                    ]
+                )
+            ]
+        ]);
+        return $this->apiReturn(static::OK);
     }
 }

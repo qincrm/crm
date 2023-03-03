@@ -39,6 +39,11 @@ $router->get('/api/user/menu', 'UserController@menu');
 $router->get('/api/notice/list', 'NoticeController@list');
 $router->get('/api/custom/follownum', 'CustomController@follownum');
 
+$router->post('/api/app/login', 'AppController@login');
+$router->post('/api/app/logout', 'AppController@logout');
+$router->post('/api/app/calllist', 'AppController@calllist');
+$router->post('/api/app/userinfo', 'AppController@userinfo');
+
 $router->group(['prefix' => 'api', 'middleware'=>'auth'], function () use ($router) {
     $router->post('user/info', 'UserController@info');
     $router->post('user/menu', 'UserController@menu');
@@ -96,6 +101,7 @@ $router->group(['prefix' => 'api', 'middleware'=>'auth'], function () use ($rout
     $router->post('custom/delback', 'CustomController@delBack');
     $router->post('custom/get', 'CustomController@get');
     $router->get('custom/backlist', 'CustomController@backlist');
+    $router->post('custom/call', 'CustomController@call');
 
     $router->get('message/list', 'NoticeController@list');
     $router->get('message/unreadlist', 'NoticeController@unreadlist');

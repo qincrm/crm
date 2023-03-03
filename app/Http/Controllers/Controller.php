@@ -9,6 +9,7 @@ class Controller extends BaseController
 
     const OK = 20000;
     const ERROR = 50000;
+    const APP_OK = 0;
 
     protected function apiReturn($code = 20000, $data = [], $msg = '', $httpCode = 200) {
         return  response()->json([
