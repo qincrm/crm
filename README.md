@@ -1,4 +1,4 @@
-# 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url] [![Github Action](https://github.com/qincrm/crm/workflows/install/badge.svg)](https://github.com/qincrm/crm/actions) [![Powered by lumen](https://img.shields.io/badge/Powered_by-Lumen-green.svg?style=flat)](https://lumen.laravel.com/) [![Powered by ArcoDesign](https://img.shields.io/badge/Powered_by-ArcoDesign-green.svg?style=flat)](https://github.com/arco-design/arco-design)
+# <img src="https://github.com/qincrm/crm/raw/main/resources/logo.png" width="50px" style="margin-bottom: -12px;"> 司跃CRM [![Code Climate][codeclimate-img-url]][codeclimate-url] [![Github Action](https://github.com/qincrm/crm/workflows/install/badge.svg)](https://github.com/qincrm/crm/actions) [![Powered by lumen](https://img.shields.io/badge/Powered_by-Lumen-green.svg?style=flat)](https://lumen.laravel.com/) [![Powered by ArcoDesign](https://img.shields.io/badge/Powered_by-ArcoDesign-green.svg?style=flat)](https://github.com/arco-design/arco-design)
 
 
 [codeclimate-img-url]: https://codeclimate.com/github/qincrm/crm.svg
@@ -15,6 +15,8 @@
 4、系统一次部署，永久使用，不限坐席  
 
 5、灵活API接口配置，支持客户数据直接接入，支持实时撞库排重  
+
+6、支持移动端APP，提高工作效率
 
 ### 二、测试地址
 
@@ -148,7 +150,19 @@ http://139.198.191.172/
 
 ![img13]
 
-[img13]: https://github.com/qincrm/crm/raw/main/resources/13.png 
+[img13]: https://github.com/qincrm/crm/raw/main/resources/13.png
+
+14、 移动APP
+
+![img14]
+
+[img14]: https://github.com/qincrm/crm/raw/main/resources/14.jpg
+
+![img15]
+
+[img15]: https://github.com/qincrm/crm/raw/main/resources/15.jpg
+
+[下载地址](https://github.com/qincrm/crm/releases/download/1.0.0/app-release-v1.0.apk)
 
 ### 五、联系我们
 
@@ -156,3 +170,9 @@ http://139.198.191.172/
 
 2、详细问题请微信/电话咨询，可开通相关测试账号，可对系统进行功能演示说明
  
+### 六、TODO
+
+1. 字典后台配置
+2. 用户字段动态配置，前台自动适配
+3. IOS客户端
+4. 安卓客户端完善
