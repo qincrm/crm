@@ -10,8 +10,8 @@
         "illuminate/session": "^5.8",
         "laravel/lumen-framework": "5.8.*",
         "league/flysystem": "^1.0",
-        "workerman/workerman": "^4.1",
-        "maatwebsite/excel": "^3.0"
+        "maatwebsite/excel": "^3.0",
+        "workerman/workerman": "^4.1"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",
