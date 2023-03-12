@@ -106,6 +106,7 @@ class CustomerService
         $oldFollowUserId = $custom->follow_user_id;
         if (empty($custom) || $oldFollowUserId == $followUserId || ($oldFollowUserId != 0 && $assignType == CustomerService::ASSIGN_TYPE_NEW)) {
             // 新用户已经分配了退出
+            DB::rollBack();
             return true;
         }
 

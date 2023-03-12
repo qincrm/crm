@@ -30,7 +30,7 @@ class Websocket extends Command
         $argv[2]=$this->option('daemonize')?'-d':'';
         // 创建一个Worker监听2346端口，使用WebSocket协议通讯
         $ws_worker = new Worker("websocket://0.0.0.0:2346");
-        $ws_worker->count = 4;
+        $ws_worker->count = 1;
 
         // 定义一个空数组，用于存储连接的客户端信息，格式为[token => connection]
         $clients = [];
@@ -66,7 +66,7 @@ class Websocket extends Command
                     }
                 }
             } else if ($action == 'list') {
-                $connection->send(count($clients). ":" . array_keys($clients));
+                $connection->send(count($clients). ":" . json_encode(array_keys($clients)));
             } else if ($action == 'notify') {
                 $admin_token = $json['admin_token'];
                 $user_token = $json['user_token'];
