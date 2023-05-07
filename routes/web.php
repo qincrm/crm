@@ -80,6 +80,7 @@ $router->group(['prefix' => 'api', 'middleware'=>'auth'], function () use ($rout
     $router->post('system/setting', 'SystemUserController@setting');
 
     $router->get('custom/list', 'CustomController@list');
+    $router->get('custom/data', 'CustomController@data');
     $router->post('custom/edit', 'CustomController@edit');
     $router->post('custom/info', 'CustomController@info');
     $router->post('custom/lahei', 'CustomController@lahei');
@@ -107,27 +108,10 @@ $router->group(['prefix' => 'api', 'middleware'=>'auth'], function () use ($rout
     $router->get('message/unreadlist', 'NoticeController@unreadlist');
     $router->post('message/read', 'NoticeController@read');
 
-    $router->get('channel/list', 'ChannelController@list');
-    $router->get('channel/detail', 'ChannelController@detail');
-    $router->get('data/backlist', 'DataController@backlist');
-    $router->get('data/reportlist', 'DataController@reportlist');
-    $router->get('data/reportdetail', 'DataController@reportdetail');
-
     $router->post('operate/assign/edit', 'AssignController@edit');
     $router->get('operate/assign/log', 'AssignController@log');
     $router->get('operate/assign/config', 'AssignController@config');
     $router->post('operate/assign/editrule', 'AssignController@editrule');
     $router->post('operate/assign/setstatus', 'AssignController@setstatus');
-    $router->get('operate/channel/config', 'ChannelController@config');
-    $router->post('operate/channel/info', 'ChannelController@info');
-    $router->post('operate/channel/edit', 'ChannelController@edit');
-    $router->post('operate/channel/setstatus', 'ChannelController@setstatus');
 
-    $router->get('work/list', 'DataController@worklist');
-    $router->get('cost/list', 'DataController@costlist');
-
-    $router->get('approve/list', 'ApproveController@list');
-    $router->post('approve/cancel', 'ApproveController@cancel');
-    $router->post('approve/pass', 'ApproveController@pass');
-    $router->post('approve/view', 'ApproveController@view');
 });

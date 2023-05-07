@@ -2,27 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Console\Commands\Websocket;
-use App\Models\Approve;
-use App\Models\ApproveDetail;
 use App\Models\Constants;
 use App\Models\Customer;
-use GuzzleHttp\Client;
 use App\Models\CustomerBack;
 use App\Models\CustomerLog;
 use App\Models\CustomerRemarkLog;
-use App\Models\CustomerRuleConfig;
 use App\Models\Excel\CustomerModel;
 use App\Models\Notice;
-use App\Models\Product;
 use App\Models\SystemDict;
-use App\Models\SystemLog;
-use App\Models\SystemRight;
-use App\Models\SystemRole;
 use App\Models\SystemTeam;
 use App\Models\SystemUser;
-use App\Providers\AppServiceProvider;
-use App\Services\ApproveService;
 use App\Services\CustomerEditService;
 use App\Services\CustomerService;
 use App\Services\RightService;
@@ -637,31 +626,9 @@ class CustomController extends Controller
         $backmodel->oper_user_id = $userId;
         $backmodel->hetong = $params['hetong'];
         $backmodel->product_id= intval($params['product_id']);
-        $backmodel->status = 0;
+        $backmodel->status = 1;
         $backmodel->save();
         $logModel = new CustomerLog();
-        // 发起审批
-        $custom = Customer::find($customId);
-        $user = SystemUser::find(intval($userId));
-        $team = SystemTeam::find(intval($user['team_id']));
-        $quanzheng = SystemUser::find(intval($params['quanzheng']));
-        $parent = SystemUser::find(intval($user['parent']));
-        $product = Product::find(intval($params['product_id']));
-        $form = [
-            '客户姓名' => $custom['name'],
-            '放款金额' => $params['amount'] . '元',
-            '点位金额' => $params['agency_fee'] . '%',
-            '实际创收' => $params['realmoney'] . '元',
-            '成本费用' => $params['cost'] . '元',
-            '跟进顾问' => $user['name'],
-            '部门' => $team['name'],
-            '权证经理' => $quanzheng['name'],
-            '合同编号' => $params['hetong'],
-            '产品' =>    $product['name'],
-        ];
-        $approveUserId = [$params['quanzheng'], $user['parent_id'], $parent['parent_id'], 1];
-        $approveService = new ApproveService();
-        $approveService->createApprove($backmodel->id, $approveService::TYPE_BACK, $form, $userId, $approveUserId);
         $logModel->saveLog($logModel::TYPE_BACK, $params['id'], '', '', $userId, "金额:".$params['amount']);
         return $this->apiReturn(static::OK);
 
@@ -736,7 +703,6 @@ class CustomController extends Controller
             $item['date'] = $item['date'] ? date('Y-m-d H:i:s', $item['date']) : '';
             $item['new_value'] = $customGourpDict[$dict::TYPE_STAR][$item['after']];
             $item['oper_user'] = $followUserArray[$item['oper_user_id']];
-            $item['status'] = ApproveService::STATUS_MAPPING[$item['status']];
             $list[$key] = $item;
         }
         $data['list'] = $list;
@@ -755,45 +721,42 @@ class CustomController extends Controller
         if ($userId > 0) {
             $model = new Customer();
             $data['custom_num'] =  $model->getWaitForFollow($userId);
-            $service = new ApproveService();
-            $data['approve_num'] = $service->noticeNum($userId);
         }
         return $this->apiReturn(static::OK, $data);
     }
 
 
+
      /**
-     * 打电话
+     * 统计数据 
      */
-    public function call(Request $request)
+    public function data(Request $request)
     {
-        $params = $request->all();
         $userId = $request->session()->get('user_id');
-        $id = $params['id'];
-        $user = SystemUser::find($userId);
-        $custom =  Customer::find($id);
-        if (empty($user['token'])) {
-            return $this->apiReturn(static::ERROR, [], '请登录客户端');
+        $userModel = new SystemUser();
+        $customModel = new Customer();
+        $data = [];
+        
+        // 筛选项
+        $params = $request->all();
+        $data['master'] = 0;
+        $followUserArray = app(RightService::class)->getCustomViews($userId);
+        if ($followUserArray == 'all') {
+            $followUserList = $userModel->getAllUser();
+            $followUserArray = collect($followUserList)->mapWithKeys(function ($item) {
+                return [$item['id'] => $item['name']];
+            })->toArray();
+            $data['master'] = 1;
+        } else {
+            $params['users'] = array_keys($followUserArray);
         }
-        $logModel = new CustomerLog();
-        $logModel->saveLog(CustomerLog::TYPE_CALL, $id, 0, 0, $userId);
-        $client = new Client();
-        $client->post("http://127.0.0.1:8990", [
-            'form_params'=> [
-                'data' => json_encode(
-                    [
-                        'action'=>'notify',
-                        'admin_token' => Websocket::ADMIN_TOKEN,
-                        'user_token' => $user['token'],
-                        'message' => json_encode([
-                            'action' => 'make_call',
-                            'mobile' => $custom['mobile'],
-                            'name' => $custom['name']
-                        ])
-                    ]
-                )
-            ]
-        ]);
-        return $this->apiReturn(static::OK);
+        $data['followUserList'] = app(SelectService::class)->genSelectByKV($followUserArray); // 转成前端的select
+
+        $data['num1'] = $customModel->getCount(array_merge($params, ['notFollow'=>1]));
+        $data['num2'] = $customModel->getCount(array_merge($params, ['notFollow'=>3, 'star'=>6]));
+        $data['num3'] = $customModel->getCount(array_merge($params, ['notFollow'=>5, 'star'=>6]));
+        $data['num4'] = $customModel->getCount(array_merge($params, ['notFollow'=>7, 'star'=>6]));
+        $data['num5'] = $customModel->getCount(array_merge($params, ['notFollow'=>1, 'star'=>6]));
+        return $this->apiReturn(static::OK, $data);
     }
 }

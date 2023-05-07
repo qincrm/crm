@@ -1,1 +1,0 @@
-import{c as n}from"./index.51a1eb25.js";function e(s,t){return n.post("/api/operate/assign/edit",{id:s,config:t})}function o(){return n.get("/api/operate/assign/config",{})}function r(s,t,i){return n.post("/api/operate/assign/editrule",{id:s,value:t,key:i})}function g(s,t){return n.post("/api/operate/assign/setstatus",{id:s,status:t})}export{r as a,o as g,g as s,e as u};

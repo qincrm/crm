@@ -172,9 +172,21 @@ class SystemUserController extends Controller
         $params = $request->all();
         $model = SystemSetting::find(1);
         if ($request->isMethod('get')) {
-            return $this->apiReturn(static::OK, ['ip'=>$model['ip']], '操作成功');
+            $roleModel = new SystemRole();
+            $allRole = $roleModel->getRoleSelect();
+            $roles = explode(",", $model->role_id);
+            foreach ($roles as $key=>$r) {
+                $roles[$key] = intval($r);
+            }
+            return $this->apiReturn(static::OK, [
+                'setting'=>['ip'=>$model['ip'], 'time'=> [$model->stime.':00', $model->etime.":00"], 'role_id'=>$roles],
+                'roles' => $allRole
+            ], '操作成功');
         } else {
             $model->ip = $params['ip'];
+            $model->stime = $params['time'][0];
+            $model->etime = $params['time'][1];
+            $model->role_id = implode(",", $params['role_id']);
             $model->save();
             return $this->apiReturn(static::OK, [], '操作成功');
         }

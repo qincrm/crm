@@ -10,7 +10,6 @@ use App\Models\SystemDict;
 use App\Models\SystemRight;
 use App\Models\SystemTeam;
 use App\Models\SystemUser;
-use App\Services\ApproveService;
 use App\Services\Hook\LoginHook;
 use App\Services\RightService;
 use Illuminate\Http\Request;

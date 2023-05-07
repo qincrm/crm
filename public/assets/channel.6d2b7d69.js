@@ -1,1 +1,0 @@
-import{c as e}from"./index.b69ae5d8.js";function o(n){return e.get("/api/operate/channel/config",{params:n})}function r(n){return e.post("/api/operate/channel/info",{id:n})}function s(n){return e.post("/api/operate/channel/edit",n)}function i(n,t){return e.post("/api/operate/channel/setstatus",{id:n,status:t})}export{r as a,s as e,o as g,i as s};
