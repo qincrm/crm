@@ -46,6 +46,8 @@ http://139.198.191.172/
 |手机APP(一键外呼)|❌|✅|
 |主管点评|❌|✅|
 |上门登记二维码|❌|✅|
+|前端源码|❌|✅|
+|技术支持|❌|✅|
 
 ### 四、系统功能概览
  
@@ -189,7 +191,7 @@ http://139.198.191.172/
 * MySQL 5.7.39
 * PHP-7.4.30
 
-前端代码: https://github.com/qincrm/frontend
+前端代码: https://github.com/qincrm/crm/releases/tag/1.0.1
 
 NGINX配置: https://github.com/qincrm/crm/blob/main/install/nginx.conf
 
